@@ -21,6 +21,12 @@ HomogeneousCoordinate HomogeneousCoordinate::operator-(const HomogeneousCoordina
 	return HomogeneousCoordinate(x - other.x, y - other.y, z - other.z, std::min(w - other.w, static_cast<float>(0)));
 }
 
+HomogeneousCoordinate HomogeneousCoordinate::operator*(float scale) const
+{
+	// TODO: Figure out if it makes sense to scale w as well.
+	return HomogeneousCoordinate(x * scale, y * scale, z * scale, w);
+}
+
 Point2d::Point2d()
 	: x(0.0), y(0.0)
 {}

@@ -267,8 +267,8 @@ int main(int argc, char **argv)
 	// init GLUT and create window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowPosition(100,100);
-	glutInitWindowSize(320,320);
+	glutInitWindowPosition(100, 100);
+	glutInitWindowSize(320, 320);
 	glutCreateWindow("NURBS - ECS178 Project 4");
 
 	// register callbacks

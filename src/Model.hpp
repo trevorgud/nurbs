@@ -10,7 +10,7 @@
 class Model
 {
 public:
-  // Implements the singleton design pattern. Only one static Model instance will be defined.
+	// Implements the singleton design pattern. Only one static Model instance will be defined.
 	static Model* instance();
 
 	Point getCameraPoint() const;
@@ -19,6 +19,7 @@ public:
 	void setAtPoint(const Point& atPoint);
 	Vector getUpVector() const;
 	void handleMouseClick(int button, int state, int x, int y);
+	void handleMouseScroll(int button, int state);
 	void handleMouseMove(int x, int y);
 
 	int getIndexSelected() const;
@@ -29,7 +30,7 @@ public:
 
 	void toggleKnotEditMode();
 	bool knotEditMode() const;
-  std::string knotMode() const;
+	std::string knotMode() const;
 
 private:
 
@@ -49,7 +50,7 @@ private:
 	int selectedSurface_;
 
 	bool knotEditMode_;
-  std::string knotMode_;
+	std::string knotMode_;
 };
 
 #endif

@@ -8,6 +8,11 @@
 
 #include <iostream>
 
+#define GLUT_MOUSE_WHEEL_SCROLL_UP 3
+#define GLUT_MOUSE_WHEEL_SCROLL_DOWN 4
+// How much to zoom camera in/out when scrolling.
+#define SCROLL_ZOOM_FACTOR 0.9
+
 Model* Model::model_ = 0;
 
 Model* Model::instance()
@@ -20,7 +25,7 @@ Model* Model::instance()
 Model::Model()
 {
 	cameraPoint_ = Point(10.0, 2.0, 10.0, 1.0);
-	atPoint_ = Point(0.0, 2.0, 0.0, 1.0);
+	atPoint_ = Point(0.0, 0.0, 0.0, 0.0);
 	click_.x = -1;
 	click_.y = -1;
 	ctrlPressed = false;
@@ -81,7 +86,7 @@ bool Model::knotEditMode() const
 
 std::string Model::knotMode() const
 {
-  return knotMode_;
+	return knotMode_;
 }
 
 void Model::handleMouseClick(int button, int state, int x, int y)
@@ -99,26 +104,46 @@ void Model::handleMouseClick(int button, int state, int x, int y)
 			click_.y = y;
 		}
 	}
+	else if(button == GLUT_MOUSE_WHEEL_SCROLL_UP || button == GLUT_MOUSE_WHEEL_SCROLL_DOWN)
+	{
+		if(state == GLUT_DOWN)
+			handleMouseScroll(button, state);
+	}
+}
+
+void Model::handleMouseScroll(int button, int state) {
+	Vector lookVector = atPoint_ - cameraPoint_;
+
+	if(button == GLUT_MOUSE_WHEEL_SCROLL_UP)
+		// Shrink the look vector when scrolling up to zoom in.
+		lookVector = lookVector * SCROLL_ZOOM_FACTOR;
+	else if(button == GLUT_MOUSE_WHEEL_SCROLL_DOWN)
+		// Shrink the look vector when scrolling up to zoom in.
+		lookVector = lookVector * (1 / SCROLL_ZOOM_FACTOR);
+
+	cameraPoint_ = atPoint_ - lookVector;
 }
 
 void Model::handleMouseMove(int x, int y)
 {
 	if(click_.x >= 0 && click_.y >= 0)
 	{
+		float dx = x - click_.x;
 		float dy = y - click_.y;
+
 		Vector lookVector = atPoint_ - cameraPoint_;
 		Vector sideways = crossProduct(Vector(0.0, 1.0, 0.0, 0.0), lookVector);
+
+		// Handle verticle rotation.
 		if(cameraPoint_.z > 0.0)
 			cameraPoint_ = rotate(cameraPoint_, Line(atPoint_, atPoint_ + sideways), dy);
 		else
 			cameraPoint_ = rotate(cameraPoint_, Line(atPoint_, atPoint_ + sideways), dy * -1.0);
-		int mod = glutGetModifiers();
-		if(true)
-		{
-			float dx = x - click_.x;
-			cameraPoint_ = rotate(cameraPoint_, Line(atPoint_, atPoint_ + Vector(0.0, 1.0, 0.0, 1.0)), dx);
-			click_.x = x;
-		}
+
+		// Handle horizontal rotation.
+		cameraPoint_ = rotate(cameraPoint_, Line(atPoint_, atPoint_ + Vector(0.0, 1.0, 0.0, 1.0)), dx);
+
+		click_.x = x;
 		click_.y = y;
 	}
 }

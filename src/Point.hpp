@@ -11,6 +11,7 @@ struct HomogeneousCoordinate
 	float w;
 	HomogeneousCoordinate operator+(const HomogeneousCoordinate& other) const;
 	HomogeneousCoordinate operator-(const HomogeneousCoordinate& other) const;
+	HomogeneousCoordinate operator*(float scaleFactor) const;
 };
 
 struct Point2d
