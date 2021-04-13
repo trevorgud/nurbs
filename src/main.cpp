@@ -10,22 +10,7 @@
 
 #include <GL/glut.h>
 
-// angle of rotation for the camera direction
-float angle = 0.0f;
-
-// actual vector representing the camera's direction
-float lx = 0.0f, lz = -1.0f;
-
-// XZ position of the camera
-float x = 0.0f, z = 5.0f;
-
-// the key states. These variables will be zero
-// when no key is being presses
-float deltaAngle = 0.0f;
-float deltaMove = 0;
-int xOrigin = -1;
-
-void changeSize(int w, int h)
+void changeWindowSize(int w, int h)
 {
 	// Prevent a divide by zero, when window is too short
 	// (you cant make a window of zero width).
@@ -50,17 +35,8 @@ void changeSize(int w, int h)
 	glMatrixMode(GL_MODELVIEW);
 }
 
-void computePos(float deltaMove)
-{
-	x += deltaMove * lx * 0.1f;
-	z += deltaMove * lz * 0.1f;
-}
-
 void renderScene(void)
 {
-	if(deltaMove)
-		computePos(deltaMove);
-
 	// Clear Color and Depth Buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -84,14 +60,6 @@ void renderScene(void)
 		drawLine(zline, {0.1, 0.1, 0.1}, 0.5);
 	}
 
-	std::vector<std::vector<Point> > points =
-	{
-		{ {-2.0, 2.0, -2.0, 1.0}, {0.0, 4.0, -2.0, 1.0}, {2.0, 5.0, -2.0, 1.0} },
-		{ {-2.0, 2.0, 0.0, 1.0}, {0.0, 4.0, 0.0, 1.0}, {2.0, 4.0, 0.0, 1.0} },
-		{ {-2.0, 2.0, 2.0, 1.0}, {0.0, 4.0, 2.0, 1.0}, {2.0, 4.0, 2.0, 1.0} },
-		{ {-2.0, 2.0, 4.0, 1.0}, {0.0, 2.0, 4.0, 1.0}, {2.0, 2.0, 4.0, 1.0} }
-	};
-
 	NurbsSurface* surface = Model::instance()->getSurface();
 	drawNurbs(*surface, {1.0, 0.0, 1.0}, 1.0, 20);
 
@@ -100,7 +68,7 @@ void renderScene(void)
 
 void processNormalKeys(unsigned char key, int xx, int yy)
 {
-	NurbsSurface * surface = Model::instance()->getSurface();
+	NurbsSurface* surface = Model::instance()->getSurface();
 	if(key == 27) // Escape.
 		exit(0);
 	else if(key == 9) // Tab.
@@ -284,14 +252,6 @@ void pressKey(int key, int xx, int yy)
 	}
 }
 
-void releaseKey(int key, int x, int y)
-{
-	switch (key) {
-		case GLUT_KEY_UP:
-		case GLUT_KEY_DOWN: deltaMove = 0; break;
-	}
-}
-
 void mouseMove(int x, int y)
 {
 	Model::instance()->handleMouseMove(x, y);
@@ -313,14 +273,13 @@ int main(int argc, char **argv)
 
 	// register callbacks
 	glutDisplayFunc(renderScene);
-	glutReshapeFunc(changeSize);
+	glutReshapeFunc(changeWindowSize);
 	glutIdleFunc(renderScene);
 
 	// Register mouse and keyboard callbacks
 	glutIgnoreKeyRepeat(1);
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(pressKey);
-	glutSpecialUpFunc(releaseKey);
 	glutMouseFunc(mouseButton);
 	glutMotionFunc(mouseMove);
 
