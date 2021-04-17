@@ -2,13 +2,13 @@
 
 ## How to compile:
 
-Install freeglut:
-
 	sudo apt-get install freeglut3-dev
+	mkdir build
+	cd build
+	cmake ..
+	make
 
-Call `make` from the command line inside the project root.
-
-Then run with `./build/nurbs`
+Then run with `./bin/nurbs`
 
 ## Controlling the NURBS surface:
 
