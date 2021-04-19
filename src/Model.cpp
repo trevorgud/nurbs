@@ -24,8 +24,8 @@ Model* Model::instance()
 
 Model::Model()
 {
-	cameraPoint_ = Point(10.0, 2.0, 10.0, 1.0);
-	atPoint_ = Point(0.0, 0.0, 0.0, 0.0);
+	cameraPoint_ = Point(10.0, -2.0, 10.0);
+	atPoint_ = Point(0.0, 0.0, 0.0);
 	click_.x = -1;
 	click_.y = -1;
 	ctrlPressed = false;
@@ -66,7 +66,7 @@ void Model::setAtPoint(const Point& atPoint)
 Vector Model::getUpVector() const
 {
 	Vector lookVector = atPoint_ - cameraPoint_;
-	Vector sideways = crossProduct(Vector(0.0, 1.0, 0.0, 0.0), lookVector);
+	Vector sideways = crossProduct(Vector(0.0, 1.0, 0.0), lookVector);
 	Vector up = crossProduct(lookVector, sideways);
 	return unitVector(up);
 }
@@ -132,7 +132,7 @@ void Model::handleMouseMove(int x, int y)
 		float dy = y - click_.y;
 
 		Vector lookVector = atPoint_ - cameraPoint_;
-		Vector sideways = crossProduct(Vector(0.0, 1.0, 0.0, 0.0), lookVector);
+		Vector sideways = crossProduct(Vector(0.0, 1.0, 0.0), lookVector);
 
 		// Handle verticle rotation.
 		if(cameraPoint_.z > 0.0)
@@ -141,7 +141,7 @@ void Model::handleMouseMove(int x, int y)
 			cameraPoint_ = rotate(cameraPoint_, Line(atPoint_, atPoint_ + sideways), dy * -1.0);
 
 		// Handle horizontal rotation.
-		cameraPoint_ = rotate(cameraPoint_, Line(atPoint_, atPoint_ + Vector(0.0, 1.0, 0.0, 1.0)), dx);
+		cameraPoint_ = rotate(cameraPoint_, Line(atPoint_, atPoint_ + Vector(0.0, 1.0, 0.0)), dx);
 
 		click_.x = x;
 		click_.y = y;
