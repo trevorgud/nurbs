@@ -7,6 +7,7 @@
 
 #define EPSILON 1.0e-8
 #define SQRT_2 1.41421356237
+#define SQRT_3 1.73205080757
 
 // Rotate around a vertical line centered at the origin.
 Point rotateOrigin(const Point& pt, float angle) {
@@ -384,5 +385,129 @@ TEST_CASE("Test cases for transformations", "[Transform.hpp]")
       rotate1x(Point(0, 0, -1), 45.0),
       Point(0, SQRT_2 / 2, -SQRT_2 / 2)
     )) < EPSILON);
+    REQUIRE(length(Line(
+      rotate1x(Point(0, 0, 1), 45.0),
+      Point(0, -SQRT_2 / 2, SQRT_2 / 2)
+    )) < EPSILON);
+    REQUIRE(length(Line(
+      rotate1x(Point(0, 1, 0), 45.0),
+      Point(0, SQRT_2 / 2, SQRT_2 / 2)
+    )) < EPSILON);
+    REQUIRE(length(Line(
+      rotate1x(Point(0, -1, 0), 45.0),
+      Point(0, -SQRT_2 / 2, -SQRT_2 / 2)
+    )) < EPSILON);
+
+    // Closure to rotate a point around the line (0, 0, 0) -> (-1, 0, 0).
+    auto rotateNeg1x = [](const Point& pt, float angle) -> Point {
+      const Line ln(Point(0, 0, 0), Point(-1, 0, 0));
+      return rotate(pt, ln, angle);
+    };
+
+    REQUIRE(length(Line(
+      rotateNeg1x(Point(0, 0, -1), 45.0),
+      Point(0, -SQRT_2 / 2, -SQRT_2 / 2)
+    )) < EPSILON);
+    REQUIRE(length(Line(
+      rotateNeg1x(Point(0, 0, 1), 45.0),
+      Point(0, SQRT_2 / 2, SQRT_2 / 2)
+    )) < EPSILON);
+    REQUIRE(length(Line(
+      rotateNeg1x(Point(0, 1, 0), 45.0),
+      Point(0, SQRT_2 / 2, -SQRT_2 / 2)
+    )) < EPSILON);
+    REQUIRE(length(Line(
+      rotateNeg1x(Point(0, -1, 0), 45.0),
+      Point(0, -SQRT_2 / 2, SQRT_2 / 2)
+    )) < EPSILON);
+
+    // Closure to rotate a point around the line (0, 0, 0) -> (0, 0, 1).
+    auto rotate1z = [](const Point& pt, float angle) -> Point {
+      const Line ln(Point(0, 0, 0), Point(0, 0, 1));
+      return rotate(pt, ln, angle);
+    };
+
+    REQUIRE(length(Line(
+      rotate1z(Point(1, 0, 0), 45.0),
+      Point(SQRT_2 / 2, SQRT_2 / 2, 0)
+    )) < EPSILON);
+    REQUIRE(length(Line(
+      rotate1z(Point(-1, 0, 0), 45.0),
+      Point(-SQRT_2 / 2, -SQRT_2 / 2, 0)
+    )) < EPSILON);
+    REQUIRE(length(Line(
+      rotate1z(Point(0, 1, 0), 45.0),
+      Point(-SQRT_2 / 2, SQRT_2 / 2, 0)
+    )) < EPSILON);
+    REQUIRE(length(Line(
+      rotate1z(Point(0, -1, 0), 45.0),
+      Point(SQRT_2 / 2, -SQRT_2 / 2, 0)
+    )) < EPSILON);
+
+    // Closure to rotate a point around the line (0, 0, 0) -> (0, 0, -1).
+    auto rotateNeg1z = [](const Point& pt, float angle) -> Point {
+      const Line ln(Point(0, 0, 0), Point(0, 0, -1));
+      return rotate(pt, ln, angle);
+    };
+
+    REQUIRE(length(Line(
+      rotateNeg1z(Point(1, 0, 0), 45.0),
+      Point(SQRT_2 / 2, -SQRT_2 / 2, 0)
+    )) < EPSILON);
+    REQUIRE(length(Line(
+      rotateNeg1z(Point(-1, 0, 0), 45.0),
+      Point(-SQRT_2 / 2, SQRT_2 / 2, 0)
+    )) < EPSILON);
+    REQUIRE(length(Line(
+      rotateNeg1z(Point(0, 1, 0), 45.0),
+      Point(SQRT_2 / 2, SQRT_2 / 2, 0)
+    )) < EPSILON);
+    REQUIRE(length(Line(
+      rotateNeg1z(Point(0, -1, 0), 45.0),
+      Point(-SQRT_2 / 2, -SQRT_2 / 2, 0)
+    )) < EPSILON);
+
+    // Closure to rotate a point around the line (0, 0, 0) -> (1, 0, 1).
+    auto rotate1x1z = [](const Point& pt, float angle) -> Point {
+      const Line ln(Point(0, 0, 0), Point(1, 0, 1));
+      return rotate(pt, ln, angle);
+    };
+
+    REQUIRE(length(Line(
+      rotate1x1z(Point(0, 1, 0), 90.0),
+      Point(-SQRT_2 / 2, 0, SQRT_2 / 2)
+    )) < EPSILON);
+    REQUIRE(length(Line(
+      rotate1x1z(Point(0, -1, 0), 90.0),
+      Point(SQRT_2 / 2, 0, -SQRT_2 / 2)
+    )) < EPSILON);
+    REQUIRE(length(Line(
+      rotate1x1z(Point(1, 0, -1), 90.0),
+      Point(0, SQRT_2, 0)
+    )) < EPSILON);
+    REQUIRE(length(Line(
+      rotate1x1z(Point(-1, 0, 1), 90.0),
+      Point(0, -SQRT_2, 0)
+    )) < EPSILON);
+
+    REQUIRE(length(Line(
+      rotate1x1z(Point(1, 1, -1), darccos(1, SQRT_3)),
+      Point(0, SQRT_3, 0)
+    )) < EPSILON * 1e2);
+    REQUIRE(length(Line(
+      rotate1x1z(Point(-1, -1, 1), darccos(1, SQRT_3)),
+      Point(0, -SQRT_3, 0)
+    )) < EPSILON * 1e2);
+
+    // Closure to rotate a point around the line (0, 0, 0) -> (-1, 0, -1).
+    auto rotateNeg1xNeg1z = [](const Point& pt, float angle) -> Point {
+      const Line ln(Point(0, 0, 0), Point(-1, 0, -1));
+      return rotate(pt, ln, angle);
+    };
+
+    REQUIRE(length(Line(
+      rotateNeg1xNeg1z(Point(-1, 1, 1), darccos(1, SQRT_3)),
+      Point(0, SQRT_3, 0)
+    )) < EPSILON * 1e2);
   }
 }

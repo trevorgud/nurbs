@@ -133,13 +133,10 @@ void Model::handleMouseMove(int x, int y)
 		Vector sideways = crossProduct(Vector(0.0, 1.0, 0.0), lookVector);
 
 		// Handle verticle rotation.
-		if(cameraPoint_.z > 0.0)
-			cameraPoint_ = rotate(cameraPoint_, Line(atPoint_, atPoint_ + sideways), dy);
-		else
-			cameraPoint_ = rotate(cameraPoint_, Line(atPoint_, atPoint_ + sideways), dy);
+		cameraPoint_ = rotate(cameraPoint_, Line(atPoint_, atPoint_ + sideways), dy);
 
 		// Handle horizontal rotation.
-		cameraPoint_ = rotate(cameraPoint_, Line(atPoint_, atPoint_ + Vector(0.0, 1.0, 0.0)), dx);
+		cameraPoint_ = rotate(cameraPoint_, Line(atPoint_, atPoint_ + Vector(0.0, 1.0, 0.0)), -dx);
 
 		click_.x = x;
 		click_.y = y;

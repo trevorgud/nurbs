@@ -18,6 +18,11 @@ float dtan(float angle)
 	return tan((double)angle * PI / 180);
 }
 
+float darccos(float adjacent, float hypotenuse)
+{
+	return acos(adjacent / hypotenuse) * (180 / PI);
+}
+
 float darctan(float opposite, float adjacent) {
 	if (std::abs(adjacent) < 1.0e-10) {
 		return 90.0;
@@ -51,9 +56,9 @@ Point zRotate(const Point& p, float angle)
 Point rotate(const Point& p, const Line& line, float angle)
 {
 	Vector v = line.p2 - line.p1;
-	float zRotateAngle = darctan(v.x, v.y);
+	float zRotateAngle = std::abs(darctan(v.x, v.y));
 	float xzVecLength = sqrt((v.x * v.x) + (v.y * v.y));
-	float xRotateAngle = darctan(xzVecLength, v.z);
+	float xRotateAngle = std::abs(darctan(xzVecLength, v.z));
 
 	// Adjust angles so that rotation vector is always pointing towards positive Z.
 	if(v.y < 0) zRotateAngle = 180.0 - zRotateAngle;

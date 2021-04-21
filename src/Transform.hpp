@@ -10,6 +10,7 @@ float dsin(float angle);
 float dtan(float angle);
 
 /** Trigonometric functions returning angle as degrees. */
+float darccos(float adjacent, float hypotenuse);
 float darctan(float opposite, float adjacent);
 
 /** Translate a point by the given vector.
