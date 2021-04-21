@@ -31,21 +31,21 @@ Point xRotate(const Point& p, float angle)
 {
 	float y = p.y * dcos(angle) - p.z * dsin(angle);
 	float z = p.y * dsin(angle) + p.z * dcos(angle);
-	return Point(p.x, y, z, 1.0);
+	return Point(p.x, y, z, p.w);
 }
 
 Point yRotate(const Point& p, float angle)
 {
 	float z = p.z * dcos(angle) - p.x * dsin(angle);
 	float x = p.z * dsin(angle) + p.x * dcos(angle);
-	return Point(x, p.y, z, 1.0);
+	return Point(x, p.y, z, p.w);
 }
 
 Point zRotate(const Point& p, float angle)
 {
 	float x = p.x * dcos(angle) - p.y * dsin(angle);
 	float y = p.x * dsin(angle) + p.y * dcos(angle);
-	return Point(x, y, p.z, 1.0);
+	return Point(x, y, p.z, p.w);
 }
 
 Point rotate(const Point& p, const Line& line, float angle)
@@ -54,43 +54,31 @@ Point rotate(const Point& p, const Line& line, float angle)
 	float zRotateAngle = darctan(v.x, v.y);
 	float xzVecLength = sqrt((v.x * v.x) + (v.y * v.y));
 	float xRotateAngle = darctan(xzVecLength, v.z);
+
+	// Adjust angles so that rotation vector is always pointing towards positive Z.
+	if(v.y < 0) zRotateAngle = 180.0 - zRotateAngle;
+	if(v.x < 0) zRotateAngle = -zRotateAngle;
+	if(v.z < 0) xRotateAngle = 180.0 - xRotateAngle;
+
 	Point pReturn = p;
+
 	// Translate the rotation line to the origin.
 	pReturn = pReturn - line.p1;
-	bool nPositive = pReturn.z > 0.0;
-	// Rotate line around Z axis onto YZ plane.
-	bool zPositive = pReturn.x * pReturn.y > 0.0;
-	if(zPositive)
-		pReturn = zRotate(pReturn, zRotateAngle);
-	else
-		pReturn = zRotate(pReturn, zRotateAngle * -1.0);
 
+	// Rotate line around Z axis onto YZ plane.
+	pReturn = zRotate(pReturn, zRotateAngle);
 
 	// Rotate the line around the X axis onto the Z axis.
-	bool xPositive = pReturn.y * pReturn.z > 0.0;
-	if(xPositive)
-		pReturn = xRotate(pReturn, xRotateAngle);
-	else
-		pReturn = xRotate(pReturn, xRotateAngle * -1.0);
+	pReturn = xRotate(pReturn, xRotateAngle);
 
 	// Rotate around Z axis whatever rotation angle was specified
-	if(nPositive)
-		pReturn = zRotate(pReturn, angle);
-	else
-		pReturn = zRotate(pReturn, angle * -1.0);
+	pReturn = zRotate(pReturn, angle);
 
 	// Reverse transformations to reorient.
-	if(xPositive)
-		pReturn = xRotate(pReturn, xRotateAngle * -1.0);
-	else
-		pReturn = xRotate(pReturn, xRotateAngle);
-
-	if(zPositive)
-		pReturn = zRotate(pReturn, zRotateAngle * -1.0);
-	else
-		pReturn = zRotate(pReturn, zRotateAngle);
-
+	pReturn = xRotate(pReturn, -xRotateAngle);
+	pReturn = zRotate(pReturn, -zRotateAngle);
 	pReturn = pReturn + line.p1;
+
 	return pReturn;
 }
 

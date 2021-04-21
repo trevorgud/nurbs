@@ -366,12 +366,23 @@ TEST_CASE("Test cases for transformations", "[Transform.hpp]")
       rotateOrigin(Point(1, 1, 1), 45.0),
       Point(SQRT_2, 1, 0)
     )) < EPSILON);
-
-    // FAILS!!!
     REQUIRE(length(Line(
       rotateOrigin(Point(1, -1, 1), 45.0),
       Point(SQRT_2, -1, 0)
     )) < EPSILON);
-    // Should have close to same result as previous test, Why does it fail when y is negative?
+  }
+
+  SECTION("Rotations around origin line on XZ plane")
+  {
+    // Closure to rotate a point around the line (0, 0, 0) -> (1, 0, 0).
+    auto rotate1x = [](const Point& pt, float angle) -> Point {
+      const Line ln(Point(0, 0, 0), Point(1, 0, 0));
+      return rotate(pt, ln, angle);
+    };
+
+    REQUIRE(length(Line(
+      rotate1x(Point(0, 0, -1), 45.0),
+      Point(0, SQRT_2 / 2, -SQRT_2 / 2)
+    )) < EPSILON);
   }
 }

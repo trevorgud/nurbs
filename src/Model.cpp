@@ -6,8 +6,6 @@
 
 #include <GL/glut.h>
 
-#include <iostream>
-
 #define GLUT_MOUSE_WHEEL_SCROLL_UP 3
 #define GLUT_MOUSE_WHEEL_SCROLL_DOWN 4
 // How much to zoom camera in/out when scrolling.
@@ -24,7 +22,7 @@ Model* Model::instance()
 
 Model::Model()
 {
-	cameraPoint_ = Point(10.0, -2.0, 10.0);
+	cameraPoint_ = Point(10.0, 2.0, 10.0);
 	atPoint_ = Point(0.0, 0.0, 0.0);
 	click_.x = -1;
 	click_.y = -1;
@@ -138,7 +136,7 @@ void Model::handleMouseMove(int x, int y)
 		if(cameraPoint_.z > 0.0)
 			cameraPoint_ = rotate(cameraPoint_, Line(atPoint_, atPoint_ + sideways), dy);
 		else
-			cameraPoint_ = rotate(cameraPoint_, Line(atPoint_, atPoint_ + sideways), dy * -1.0);
+			cameraPoint_ = rotate(cameraPoint_, Line(atPoint_, atPoint_ + sideways), dy);
 
 		// Handle horizontal rotation.
 		cameraPoint_ = rotate(cameraPoint_, Line(atPoint_, atPoint_ + Vector(0.0, 1.0, 0.0)), dx);
