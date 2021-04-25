@@ -1,9 +1,11 @@
 #ifndef NURBSSURFACE_HPP_
 #define NURBSSURFACE_HPP_
 
-#include "Point.hpp"
-
 #include <vector>
+
+#include <nlohmann/json.hpp>
+
+#include "Point.hpp"
 
 class NurbsSurface
 {
@@ -52,7 +54,6 @@ public:
 	int getVOrder() const;
 	void setVOrder(int order);
 
-
 	Mode getMode() const;
 	void setMode(Mode mode);
 
@@ -72,6 +73,10 @@ public:
 	void toggleMode();
 	void setSelectedKnotIndex(int index);
 	int getSelectedKnotIndex() const;
+
+	void toJson(nlohmann::json& json) const;
+	void fromJson(const nlohmann::json& json);
+
 private:
 	int selectedKnotIndex;
 	std::vector<std::vector<Point> > points_;
@@ -82,5 +87,10 @@ private:
 	Index selected_;
 	Mode mode_;
 };
+
+void to_json(nlohmann::json& json, const NurbsSurface& nurbs);
+void from_json(const nlohmann::json& json, NurbsSurface& nurbs);
+void to_json(nlohmann::json& json, const NurbsSurface::Index& nurbs);
+void from_json(const nlohmann::json& json, NurbsSurface::Index& nurbs);
 
 #endif

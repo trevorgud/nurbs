@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 #include <GL/glut.h>
+#include <nlohmann/json.hpp>
 
 void changeWindowSize(int w, int h)
 {

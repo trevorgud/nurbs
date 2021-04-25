@@ -165,3 +165,35 @@ std::vector<Point*> Model::getMovablePoints()
 {
 	return getSurface()->getMovablePoints();
 }
+
+void Model::toJson(nlohmann::json& json) const
+{
+	json = nlohmann::json{
+    {"surfaces", surfaces_},
+		{"selectedSurface", selectedSurface_},
+		{"uResolution", uResolution_},
+		{"vResolution", vResolution_},
+		{"knotEditMode", knotEditMode_},
+		{"knotMode", knotMode_}
+	};
+}
+
+void Model::fromJson(const nlohmann::json& json)
+{
+	json.at("surfaces").get_to(surfaces_);
+	json.at("selectedSurface").get_to(selectedSurface_);
+	json.at("uResolution").get_to(uResolution_);
+	json.at("vResolution").get_to(vResolution_);
+	json.at("knotEditMode").get_to(knotEditMode_);
+	json.at("knotMode").get_to(knotMode_);
+}
+
+void to_json(nlohmann::json& json, const Model& model)
+{
+	model.toJson(json);
+}
+
+void from_json(const nlohmann::json& json, Model& model)
+{
+	model.fromJson(json);
+}

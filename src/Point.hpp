@@ -1,6 +1,8 @@
 #ifndef POINT_HPP_
 #define POINT_HPP_
 
+#include <nlohmann/json.hpp>
+
 struct HomogeneousCoordinate
 {
 	HomogeneousCoordinate();
@@ -31,5 +33,8 @@ float dotProduct(const Vector& v1, const Vector& v2);
 float distance(const Point& p1, const Point& p2);
 Point rational(const Point& p);
 Point irrational(const Point& p);
+
+void to_json(nlohmann::json& json, const HomogeneousCoordinate& coord);
+void from_json(const nlohmann::json& json, HomogeneousCoordinate& coord);
 
 #endif

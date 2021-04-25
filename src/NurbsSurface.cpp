@@ -357,3 +357,47 @@ void NurbsSurface::toggleMode()
 	else if(mode_ == ALL)
 		mode_ = POINT;
 }
+
+void NurbsSurface::toJson(nlohmann::json& json) const
+{
+	json = nlohmann::json {
+		{"selectedKnotIndex", selectedKnotIndex},
+		{"points", points_},
+		{"uKnots", uKnots_},
+		{"vKnots", vKnots_},
+		{"uOrder", uOrder_},
+		{"vOrder", vOrder_},
+		{"selected", selected_},
+		{"mode", mode_}
+	};
+}
+
+void NurbsSurface::fromJson(const nlohmann::json& json)
+{
+	json.at("selectedKnotIndex").get_to(selectedKnotIndex);
+	json.at("points").get_to(points_);
+	json.at("uKnots").get_to(uKnots_);
+	json.at("vKnots").get_to(vKnots_);
+	json.at("uOrder").get_to(uOrder_);
+	json.at("vOrder").get_to(vOrder_);
+	json.at("selected").get_to(selected_);
+	json.at("mode").get_to(mode_);
+}
+
+void to_json(nlohmann::json& json, const NurbsSurface::Index& index)
+{
+	json = nlohmann::json {
+		{"i", index.i},
+		{"j", index.j}
+	};
+}
+
+void from_json(const nlohmann::json& json, NurbsSurface::Index& index)
+{
+	json.at("i").get_to(index.i);
+	json.at("j").get_to(index.j);
+}
+
+void to_json(nlohmann::json& json, const NurbsSurface& nurbs) { nurbs.toJson(json); }
+
+void from_json(const nlohmann::json& json, NurbsSurface& nurbs) { nurbs.fromJson(json); }

@@ -69,3 +69,21 @@ Point irrational(const Point& p)
 {
 	return Point(p.x / p.w, p.y / p.w, p.z / p.w, p.w);
 }
+
+void to_json(nlohmann::json& json, const HomogeneousCoordinate& coord)
+{
+  json = nlohmann::json {
+    {"x", coord.x},
+    {"y", coord.y},
+    {"z", coord.z},
+    {"w", coord.w}
+  };
+}
+
+void from_json(const nlohmann::json& json, HomogeneousCoordinate& coord)
+{
+  json.at("x").get_to(coord.x);
+  json.at("y").get_to(coord.y);
+  json.at("z").get_to(coord.z);
+  json.at("w").get_to(coord.w);
+}

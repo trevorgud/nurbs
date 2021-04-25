@@ -16,15 +16,23 @@ target_link_libraries(nurbs PUBLIC ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES})
 set_target_properties(nurbs PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 Include(FetchContent)
+
 FetchContent_Declare(
   Catch2
   GIT_REPOSITORY https://github.com/catchorg/Catch2.git
   GIT_TAG        v2.13.1)
 FetchContent_MakeAvailable(Catch2)
 
+FetchContent_Declare(
+  json
+  GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent.git
+  GIT_TAG        v3.9.1)
+FetchContent_MakeAvailable(json)
+target_link_libraries(nurbs PRIVATE nlohmann_json::nlohmann_json)
+
 file(GLOB_RECURSE TESTS_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_SOURCE_DIR}/test/*.cpp")
 list(REMOVE_ITEM SRC "src/main.cpp")
 add_executable(nurbs-test "test/Test.cpp" ${SRC} ${TESTS_SRC})
 
-target_link_libraries(nurbs-test PRIVATE Catch2::Catch2 ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES})
+target_link_libraries(nurbs-test PRIVATE Catch2::Catch2 nlohmann_json::nlohmann_json ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES})
 set_target_properties(nurbs-test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
