@@ -11,6 +11,8 @@
 #include <GL/glut.h>
 #include <nlohmann/json.hpp>
 
+#define ASCII_LOWERCASE_OFFSET 96
+
 void changeWindowSize(int w, int h)
 {
 	// Prevent a divide by zero, when window is too short
@@ -49,8 +51,8 @@ void renderScene(void)
 	Vector up = Model::instance()->getUpVector();
 	// Set the camera
 	gluLookAt(camera.x, camera.y, camera.z,
-	          at.x, at.y, at.z,
-	          up.x, up.y, up.z);
+						at.x, at.y, at.z,
+						up.x, up.y, up.z);
 
 	// Draw Ground Wireframe
 	for(float i = -100.0; i <= 100.0; i += 10.0)
@@ -67,7 +69,7 @@ void renderScene(void)
 	glutSwapBuffers();
 }
 
-void processNormalKeys(unsigned char key, int xx, int yy)
+void processNormalKey(unsigned char key, int xx, int yy)
 {
 	NurbsSurface* surface = Model::instance()->getSurface();
 	if(key == 27) // Escape.
@@ -171,9 +173,13 @@ void processNormalKeys(unsigned char key, int xx, int yy)
 			Model::instance()->getSurface()->printVKnots();
 		}
 	}
+	else if(glutGetModifiers() && GLUT_ACTIVE_CTRL && key + ASCII_LOWERCASE_OFFSET == 's')
+	{
+		Model::instance()->save();
+	}
 }
 
-void pressKey(int key, int xx, int yy)
+void processSpecialKey(int key, int xx, int yy)
 {
 	NurbsSurface* surface = Model::instance()->getSurface();
 	int mod = glutGetModifiers();
@@ -265,6 +271,8 @@ void mouseButton(int button, int state, int x, int y)
 
 int main(int argc, char **argv)
 {
+	Model::init(argc == 2 ? std::string(argv[1]) : "scene.json");
+
 	// init GLUT and create window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -279,8 +287,8 @@ int main(int argc, char **argv)
 
 	// Register mouse and keyboard callbacks
 	glutIgnoreKeyRepeat(1);
-	glutKeyboardFunc(processNormalKeys);
-	glutSpecialFunc(pressKey);
+	glutKeyboardFunc(processNormalKey);
+	glutSpecialFunc(processSpecialKey);
 	glutMouseFunc(mouseButton);
 	glutMotionFunc(mouseMove);
 

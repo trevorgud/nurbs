@@ -6,39 +6,44 @@
 
 #include <GL/glut.h>
 
+#include <fstream>
+#include <iostream>
+#include <stdexcept>
+
 #define GLUT_MOUSE_WHEEL_SCROLL_UP 3
 #define GLUT_MOUSE_WHEEL_SCROLL_DOWN 4
 // How much to zoom camera in/out when scrolling.
 #define SCROLL_ZOOM_FACTOR 0.9
 
-Model* Model::model_ = 0;
+Model* Model::model_ = nullptr;
 
 Model* Model::instance()
 {
 	if(model_ == nullptr)
-		model_ = new Model;
+		throw(std::runtime_error("Model::instance model not initialized"));
 	return model_;
 }
 
-Model::Model()
+void Model::init(const std::string& fileName)
+{
+	if(model_ == nullptr)
+		model_ = new Model(fileName);
+	else
+		throw(std::runtime_error("Model::init model already initialized."));
+}
+
+Model::Model(const std::string& fileName) : fileName_(fileName)
 {
 	cameraPoint_ = Point(10.0, 2.0, 10.0);
 	atPoint_ = Point(0.0, 0.0, 0.0);
 	click_.x = -1;
 	click_.y = -1;
-	ctrlPressed = false;
-	std::vector<std::vector<Point> > points =
-		{
-			{ {-2.0, 0.0, -2.0, 1.0}, {0.0, 0.0, -2.0, 1.0}, {2.0, 0.0, -2.0, 1.0} },
-			{ {-2.0, 0.0, 0.0, 1.0}, {0.0, 0.0, 0.0, 1.0}, {2.0, 0.0, 0.0, 1.0} },
-			{ {-2.0, 0.0, 2.0, 1.0}, {0.0, 0.0, 2.0, 1.0}, {2.0, 0.0, 2.0, 1.0} },
-			{ {-2.0, 0.0, 4.0, 1.0}, {0.0, 0.0, 4.0, 1.0}, {2.0, 0.0, 4.0, 1.0} }
-		};
-	NurbsSurface surface(points);
-	surfaces_.push_back(surface);
-	selectedSurface_ = 0;
-	knotEditMode_ = false;
-	knotMode_ = "none";
+	load();
+}
+
+Model::~Model()
+{
+	delete model_;
 }
 
 Point Model::getCameraPoint() const
@@ -166,10 +171,55 @@ std::vector<Point*> Model::getMovablePoints()
 	return getSurface()->getMovablePoints();
 }
 
+void Model::load()
+{
+	std::ifstream ifs(fileName_);
+	if(ifs.is_open())
+	{
+		std::string modelData(
+			(std::istreambuf_iterator<char>(ifs)),
+			(std::istreambuf_iterator<char>())
+		);
+		fromJson(nlohmann::json::parse(modelData));
+	}
+	else
+	{
+		loadDefault();
+		save();
+	}
+}
+
+void Model::loadDefault()
+{
+	std::vector<std::vector<Point> > points =
+		{
+			{ {-2.0, 0.0, -2.0, 1.0}, {0.0, 0.0, -2.0, 1.0}, {2.0, 0.0, -2.0, 1.0} },
+			{ {-2.0, 0.0, 0.0, 1.0}, {0.0, 0.0, 0.0, 1.0}, {2.0, 0.0, 0.0, 1.0} },
+			{ {-2.0, 0.0, 2.0, 1.0}, {0.0, 0.0, 2.0, 1.0}, {2.0, 0.0, 2.0, 1.0} },
+			{ {-2.0, 0.0, 4.0, 1.0}, {0.0, 0.0, 4.0, 1.0}, {2.0, 0.0, 4.0, 1.0} }
+		};
+	NurbsSurface surface(points);
+	surfaces_.push_back(surface);
+	selectedSurface_ = 0;
+	knotEditMode_ = false;
+	knotMode_ = "none";
+}
+
+void Model::save() const
+{
+	nlohmann::json json;
+	toJson(json);
+	int indentChars = 2;
+	std::string modelData = json.dump(indentChars);
+	std::ofstream ofs(fileName_);
+	ofs << modelData;
+	std::cout << "Saved scene to file: " << fileName_ << std::endl;
+}
+
 void Model::toJson(nlohmann::json& json) const
 {
 	json = nlohmann::json{
-    {"surfaces", surfaces_},
+		{"surfaces", surfaces_},
 		{"selectedSurface", selectedSurface_},
 		{"uResolution", uResolution_},
 		{"vResolution", vResolution_},
@@ -186,14 +236,4 @@ void Model::fromJson(const nlohmann::json& json)
 	json.at("vResolution").get_to(vResolution_);
 	json.at("knotEditMode").get_to(knotEditMode_);
 	json.at("knotMode").get_to(knotMode_);
-}
-
-void to_json(nlohmann::json& json, const Model& model)
-{
-	model.toJson(json);
-}
-
-void from_json(const nlohmann::json& json, Model& model)
-{
-	model.fromJson(json);
 }

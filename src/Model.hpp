@@ -15,6 +15,7 @@ class Model
 public:
 	// Implements the singleton design pattern. Only one static Model instance will be defined.
 	static Model* instance();
+	static void init(const std::string& fileName);
 
 	Point getCameraPoint() const;
 	void setCameraPoint(const Point& cameraPoint);
@@ -35,14 +36,23 @@ public:
 	bool knotEditMode() const;
 	std::string knotMode() const;
 
+	/** Load from file specified during model init. Creates file if not already existing. */
+	void load();
+
+	/** Save to file specified during model init. Creates file if not already existing. */
+	void save() const;
+
+private:
+	Model(const std::string& fileName);
+	~Model();
+
+	void loadDefault();
 	void toJson(nlohmann::json& json) const;
 	void fromJson(const nlohmann::json& json);
 
-private:
-	Model();
 	static Model * model_;
 
-	bool ctrlPressed;
+	std::string fileName_;
 
 	Point cameraPoint_;
 	Point atPoint_;
@@ -57,8 +67,5 @@ private:
 	bool knotEditMode_;
 	std::string knotMode_;
 };
-
-void to_json(nlohmann::json& json, const Model& model);
-void from_json(const nlohmann::json& json, Model& model);
 
 #endif
